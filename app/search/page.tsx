@@ -184,13 +184,15 @@ function SearchContent() {
                     />
                   </div>
                 )}
-                <h3 className="text-lg font-bold text-primary-400 mb-1">{coach.name}</h3>
-                <p className="text-dark-textSecondary text-sm mb-1">{coach.city}</p>
-                <RatingBadge
-                  avg={reviewStats[coach.id]?.avg ?? 0}
-                  count={reviewStats[coach.id]?.count ?? 0}
-                  className="text-dark-textSecondary mb-2"
-                />
+                <div className="flex justify-between items-start gap-2 mb-1">
+                  <h3 className="text-lg font-bold text-primary-400">{coach.name}</h3>
+                  <RatingBadge
+                    avg={reviewStats[coach.id]?.avg ?? 0}
+                    count={reviewStats[coach.id]?.count ?? 0}
+                    className="text-dark-textSecondary shrink-0"
+                  />
+                </div>
+                <p className="text-dark-textSecondary text-sm mb-3">{coach.city}</p>
                 <p className="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent font-bold mb-3 text-lg">
                   €{coach.hourly_rate.toFixed(2)}/hour
                 </p>
