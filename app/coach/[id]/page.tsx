@@ -122,9 +122,9 @@ export default function CoachProfilePage() {
             <div>
               <h1 className="text-4xl font-bold text-gray-900">{coach.name}</h1>
               <p className="text-gray-600 text-lg">{coach.city}</p>
-              <RatingBadge avg={reviewStats.avg} count={reviewStats.count} className="text-gray-600 mt-1" />
             </div>
             <div className="text-right">
+              <RatingBadge avg={reviewStats.avg} count={reviewStats.count} className="text-gray-600 justify-end mb-1" />
               <p className="text-3xl font-bold text-primary-600">
                 €{coach.hourly_rate.toFixed(2)}<span className="text-sm text-gray-600">/hour</span>
               </p>
