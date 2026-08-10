@@ -6,11 +6,15 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { haversineDistance } from "@/lib/utils";
 import { getCityByName } from "@/constants/dutch-cities";
+import { RatingBadge } from "@/components/RatingBadge";
 import type { Coach } from "@/types/database";
+
+type ReviewStats = Record<string, { avg: number; count: number }>;
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const [coaches, setCoaches] = useState<Coach[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -89,12 +93,46 @@ function SearchContent() {
         : byAgeGroup;
 
       setCoaches(byGender);
+      await fetchReviewStats(byGender.map((coach) => coach.id));
     } catch (err) {
       setError("Failed to fetch coaches");
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchReviewStats = async (coachIds: string[]) => {
+    if (coachIds.length === 0) {
+      setReviewStats({});
+      return;
+    }
+
+    const { data: reviews, error: reviewsError } = await supabase
+      .from("reviews")
+      .select("coach_id, rating")
+      .eq("status", "approved")
+      .in("coach_id", coachIds);
+
+    if (reviewsError) {
+      console.error(reviewsError);
+      return;
+    }
+
+    const totals: Record<string, { sum: number; count: number }> = {};
+    (reviews || []).forEach((review) => {
+      const entry = totals[review.coach_id] || { sum: 0, count: 0 };
+      entry.sum += review.rating;
+      entry.count += 1;
+      totals[review.coach_id] = entry;
+    });
+
+    const stats: ReviewStats = {};
+    Object.entries(totals).forEach(([coachId, { sum, count }]) => {
+      stats[coachId] = { avg: sum / count, count };
+    });
+
+    setReviewStats(stats);
   };
 
   if (loading)
@@ -147,7 +185,12 @@ function SearchContent() {
                   </div>
                 )}
                 <h3 className="text-lg font-bold text-primary-400 mb-1">{coach.name}</h3>
-                <p className="text-dark-textSecondary text-sm mb-3">{coach.city}</p>
+                <p className="text-dark-textSecondary text-sm mb-1">{coach.city}</p>
+                <RatingBadge
+                  avg={reviewStats[coach.id]?.avg ?? 0}
+                  count={reviewStats[coach.id]?.count ?? 0}
+                  className="text-dark-textSecondary mb-2"
+                />
                 <p className="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent font-bold mb-3 text-lg">
                   €{coach.hourly_rate.toFixed(2)}/hour
                 </p>

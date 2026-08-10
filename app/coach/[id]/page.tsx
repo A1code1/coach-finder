@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { RatingBadge } from "@/components/RatingBadge";
 import type { Coach } from "@/types/database";
 
 export default function CoachProfilePage() {
   const params = useParams();
   const coachId = params.id as string;
   const [coach, setCoach] = useState<Coach | null>(null);
+  const [reviewStats, setReviewStats] = useState({ avg: 0, count: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showContact, setShowContact] = useState(false);
@@ -31,12 +33,34 @@ export default function CoachProfilePage() {
 
       if (fetchError) throw new Error("Coach not found");
       setCoach(data);
+      await fetchReviewStats(coachId);
     } catch (err) {
       setError("Failed to load coach profile");
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchReviewStats = async (id: string) => {
+    const { data: reviews, error: reviewsError } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("coach_id", id)
+      .eq("status", "approved");
+
+    if (reviewsError) {
+      console.error(reviewsError);
+      return;
+    }
+
+    if (!reviews || reviews.length === 0) {
+      setReviewStats({ avg: 0, count: 0 });
+      return;
+    }
+
+    const sum = reviews.reduce((total, review) => total + review.rating, 0);
+    setReviewStats({ avg: sum / reviews.length, count: reviews.length });
   };
 
   const handleRevealContact = async () => {
@@ -98,6 +122,7 @@ export default function CoachProfilePage() {
             <div>
               <h1 className="text-4xl font-bold text-gray-900">{coach.name}</h1>
               <p className="text-gray-600 text-lg">{coach.city}</p>
+              <RatingBadge avg={reviewStats.avg} count={reviewStats.count} className="text-gray-600 mt-1" />
             </div>
             <div className="text-right">
               <p className="text-3xl font-bold text-primary-600">
