@@ -19,6 +19,7 @@ export default function RootLayout({
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">💪 Coach Finder</h1>
             <div className="flex gap-6">
               <a href="/" className="text-dark-textSecondary hover:text-primary-500 transition font-medium">Home</a>
+              <a href="/messages" className="text-dark-textSecondary hover:text-primary-500 transition font-medium">Messages</a>
               <a href="/coach/login" className="text-primary-500 font-medium hover:text-primary-600 transition">Coach Login</a>
               <a href="/admin/login" className="text-dark-textSecondary hover:text-primary-500 transition font-medium">Admin</a>
             </div>

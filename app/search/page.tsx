@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { haversineDistance } from "@/lib/utils";
@@ -12,6 +12,7 @@ import type { Coach } from "@/types/database";
 type ReviewStats = Record<string, { avg: number; count: number }>;
 
 function SearchContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats>({});
@@ -173,49 +174,60 @@ function SearchContent() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {coaches.map((coach) => (
-            <Link key={coach.id} href={`/coach/${coach.id}`}>
-              <div className="bg-dark-card border border-primary-600 border-opacity-30 rounded-lg hover:border-primary-500 hover:border-opacity-50 shadow-lg hover:shadow-2xl transition transform hover:scale-105 p-6 cursor-pointer h-full">
-                {coach.photo_url && (
-                  <div className="mb-4 h-48 bg-dark-surface rounded-lg overflow-hidden border border-primary-600 border-opacity-20">
-                    <img
-                      src={coach.photo_url}
-                      alt={coach.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="flex justify-between items-start gap-2 mb-1">
-                  <h3 className="text-lg font-bold text-primary-400">{coach.name}</h3>
-                  <RatingBadge
-                    avg={reviewStats[coach.id]?.avg ?? 0}
-                    count={reviewStats[coach.id]?.count ?? 0}
-                    className="text-dark-textSecondary shrink-0"
+            <div
+              key={coach.id}
+              onClick={() => router.push(`/coach/${coach.id}`)}
+              className="bg-dark-card border border-primary-600 border-opacity-30 rounded-lg hover:border-primary-500 hover:border-opacity-50 shadow-lg hover:shadow-2xl transition transform hover:scale-105 p-6 cursor-pointer h-full flex flex-col"
+            >
+              {coach.photo_url && (
+                <div className="mb-4 h-48 bg-dark-surface rounded-lg overflow-hidden border border-primary-600 border-opacity-20">
+                  <img
+                    src={coach.photo_url}
+                    alt={coach.name}
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <p className="text-dark-textSecondary text-sm mb-3">{coach.city}</p>
-                <p className="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent font-bold mb-3 text-lg">
-                  €{coach.hourly_rate.toFixed(2)}/hour
-                </p>
-                <p className="text-dark-textSecondary text-sm line-clamp-2 mb-4">
-                  {coach.bio}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {coach.specialties.slice(0, 2).map((spec) => (
-                    <span
-                      key={spec}
-                      className="bg-primary-500 bg-opacity-20 text-primary-400 text-xs px-3 py-1 rounded border border-primary-600 border-opacity-30"
-                    >
-                      {spec}
-                    </span>
-                  ))}
-                  {coach.specialties.length > 2 && (
-                    <span className="text-dark-textSecondary text-xs px-2 py-1">
-                      +{coach.specialties.length - 2} more
-                    </span>
-                  )}
-                </div>
+              )}
+              <div className="flex justify-between items-start gap-2 mb-1">
+                <h3 className="text-lg font-bold text-primary-400">{coach.name}</h3>
+                <RatingBadge
+                  avg={reviewStats[coach.id]?.avg ?? 0}
+                  count={reviewStats[coach.id]?.count ?? 0}
+                  className="text-dark-textSecondary shrink-0"
+                />
               </div>
-            </Link>
+              <p className="text-dark-textSecondary text-sm mb-3">{coach.city}</p>
+              <p className="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent font-bold mb-3 text-lg">
+                €{coach.hourly_rate.toFixed(2)}/hour
+              </p>
+              <p className="text-dark-textSecondary text-sm line-clamp-2 mb-4">
+                {coach.bio}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {coach.specialties.slice(0, 2).map((spec) => (
+                  <span
+                    key={spec}
+                    className="bg-primary-500 bg-opacity-20 text-primary-400 text-xs px-3 py-1 rounded border border-primary-600 border-opacity-30"
+                  >
+                    {spec}
+                  </span>
+                ))}
+                {coach.specialties.length > 2 && (
+                  <span className="text-dark-textSecondary text-xs px-2 py-1">
+                    +{coach.specialties.length - 2} more
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/coach/${coach.id}/message`);
+                }}
+                className="mt-auto w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg transition"
+              >
+                Message Coach
+              </button>
+            </div>
           ))}
         </div>
       )}

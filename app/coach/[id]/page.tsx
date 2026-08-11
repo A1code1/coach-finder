@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { RatingBadge } from "@/components/RatingBadge";
 import type { Coach } from "@/types/database";
@@ -130,6 +131,13 @@ export default function CoachProfilePage() {
               </p>
             </div>
           </div>
+
+          <Link
+            href={`/coach/${coachId}/message`}
+            className="block w-full text-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg transition mb-8"
+          >
+            Message Coach
+          </Link>
 
           <div className="mb-8 pb-8 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
