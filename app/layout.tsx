@@ -1,10 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { HeaderNav } from "@/components/HeaderNav";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   title: "Coach Finder - Find Football Coaches in the Netherlands",
   description: "Discover and connect with experienced football coaches in your area.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1a1a1a",
 };
 
 export default function RootLayout({
@@ -15,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ServiceWorkerRegister />
         <header className="bg-dark-surface border-b border-primary-700 border-opacity-20">
           <nav className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">💪 Coach Finder</h1>

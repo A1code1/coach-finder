@@ -11,6 +11,7 @@ export interface Coach {
   training_locations: string[];
   availability: Record<string, string[]>;
   photo_url: string | null;
+  photo_urls: string[];
   email: string | null;
   phone: string | null;
   gender: "male" | "female" | null;

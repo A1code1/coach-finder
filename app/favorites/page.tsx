@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { Skeleton } from "@/components/Skeleton";
 import type { Coach } from "@/types/database";
 
 type FavoriteCoach = Coach & { avgRating: number; reviewCount: number };
@@ -78,7 +79,19 @@ export default function FavoritesPage() {
     setCoaches((prev) => prev.filter((c) => c.id !== coachId));
   };
 
-  if (checking || loading) return <div className="text-center py-12">Loading...</div>;
+  if (checking || loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-4 w-64 mb-8" />
+        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   const cheapestRate = coaches.length ? Math.min(...coaches.map((c) => c.hourly_rate)) : null;
   const reviewedCoaches = coaches.filter((c) => c.reviewCount > 0);

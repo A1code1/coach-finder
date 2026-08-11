@@ -8,6 +8,7 @@ import { haversineDistance } from "@/lib/utils";
 import { getCityByName } from "@/constants/dutch-cities";
 import { RatingBadge } from "@/components/RatingBadge";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { CoachCardSkeletonGrid } from "@/components/Skeleton";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import type { Coach } from "@/types/database";
 
@@ -169,8 +170,14 @@ function SearchContent() {
 
   if (loading)
     return (
-      <div className="athletic-theme text-center py-12 text-dark-textSecondary text-lg">
-        Loading elite coaches...
+      <div className="athletic-theme">
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <div className="mb-8">
+            <div className="h-8 w-64 bg-dark-surface rounded animate-pulse mb-2" />
+            <div className="h-5 w-40 bg-dark-surface rounded animate-pulse" />
+          </div>
+          <CoachCardSkeletonGrid />
+        </div>
       </div>
     );
 

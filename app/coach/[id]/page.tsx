@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { RatingBadge } from "@/components/RatingBadge";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { Skeleton } from "@/components/Skeleton";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import type { Coach } from "@/types/database";
 
@@ -16,6 +17,7 @@ export default function CoachProfilePage() {
   const [coach, setCoach] = useState<Coach | null>(null);
   const [reviewStats, setReviewStats] = useState({ avg: 0, count: 0 });
   const [isFavorited, setIsFavorited] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showContact, setShowContact] = useState(false);
@@ -121,23 +123,54 @@ export default function CoachProfilePage() {
     }
   };
 
-  if (checking || !user) return <div className="text-center py-12">Loading...</div>;
-  if (loading) return <div className="text-center py-12">Loading...</div>;
+  if (checking || !user || loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden p-8">
+          <Skeleton className="h-96 w-full mb-8 rounded-lg" />
+          <Skeleton className="h-8 w-64 mb-3" />
+          <Skeleton className="h-4 w-32 mb-8" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+      </div>
+    );
+  }
   if (error || !coach)
     return (
       <div className="text-center py-12 text-red-600">{error || "Coach not found"}</div>
     );
 
+  const photos = coach.photo_urls?.length ? coach.photo_urls : coach.photo_url ? [coach.photo_url] : [];
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        {coach.photo_url && (
-          <div className="h-96 bg-gray-200 overflow-hidden">
-            <img
-              src={coach.photo_url}
-              alt={coach.name}
-              className="w-full h-full object-cover"
-            />
+        {photos.length > 0 && (
+          <div>
+            <div className="h-96 bg-gray-200 overflow-hidden">
+              <img
+                src={photos[selectedPhoto] || photos[0]}
+                alt={coach.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {photos.length > 1 && (
+              <div className="flex gap-2 p-3 overflow-x-auto bg-gray-50">
+                {photos.map((url, idx) => (
+                  <button
+                    key={url}
+                    onClick={() => setSelectedPhoto(idx)}
+                    className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
+                      idx === selectedPhoto ? "border-primary-600" : "border-transparent"
+                    }`}
+                  >
+                    <img src={url} alt={`${coach.name} photo ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

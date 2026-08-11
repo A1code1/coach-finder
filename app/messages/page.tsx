@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { ListSkeleton } from "@/components/Skeleton";
 
 type ConversationRow = {
   id: string;
@@ -69,7 +70,14 @@ export default function MessagesPage() {
     }
   };
 
-  if (loading) return <div className="text-center py-12">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Messages</h1>
+        <ListSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
