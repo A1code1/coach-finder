@@ -29,6 +29,32 @@ function PlayerLoginForm() {
       if (loginError) throw loginError;
 
       if (data.user) {
+        const { data: coachRow } = await supabase
+          .from("coaches")
+          .select("id")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+
+        if (coachRow) {
+          router.push(next);
+          return;
+        }
+
+        try {
+          const { data: prefsRow, error: prefsError } = await supabase
+            .from("player_preferences")
+            .select("player_id")
+            .eq("player_id", data.user.id)
+            .maybeSingle();
+
+          if (!prefsError && !prefsRow) {
+            router.push(`/player/quiz?next=${encodeURIComponent(next)}`);
+            return;
+          }
+        } catch (prefsErr) {
+          console.error(prefsErr);
+        }
+
         router.push(next);
       }
     } catch (err: any) {

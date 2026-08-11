@@ -43,7 +43,7 @@ function PlayerSignupForm() {
       if (signupError) throw signupError;
 
       if (data.session) {
-        router.push(next);
+        router.push(`/player/quiz?next=${encodeURIComponent(next)}`);
       } else {
         setConfirmationSent(true);
       }

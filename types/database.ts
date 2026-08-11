@@ -67,3 +67,14 @@ export interface Favorite {
   coach_id: string;
   created_at: string;
 }
+
+export interface PlayerPreferences {
+  player_id: string;
+  city: string | null;
+  radius_km: number;
+  budget_max: number | null;
+  age_group: string | null;
+  specialties: string[];
+  gender_preference: string | null;
+  updated_at: string;
+}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { RatingBadge } from "@/components/RatingBadge";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { AvailabilityGrid } from "@/components/AvailabilityGrid";
 import { Skeleton } from "@/components/Skeleton";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import type { Coach } from "@/types/database";
@@ -40,7 +41,7 @@ export default function CoachProfilePage() {
 
       if (fetchError) throw new Error("Coach not found");
       setCoach(data);
-      await Promise.all([fetchReviewStats(coachId), fetchFavoriteStatus(coachId)]);
+      await Promise.all([fetchReviewStats(coachId), fetchFavoriteStatus(coachId), trackView(data)]);
     } catch (err) {
       setError("Failed to load coach profile");
       console.error(err);
@@ -86,6 +87,15 @@ export default function CoachProfilePage() {
     }
 
     setIsFavorited(!!data);
+  };
+
+  const trackView = async (coachRow: Coach) => {
+    if (!user || user.id === coachRow.user_id) return;
+    try {
+      await supabase.from("profile_views").insert({ coach_id: coachRow.id, viewer_id: user.id });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleRevealContact = async () => {
@@ -251,22 +261,7 @@ export default function CoachProfilePage() {
 
           <div className="mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Availability</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(coach.availability).map(([day, times]) => (
-                <div key={day} className="bg-gray-50 p-4 rounded">
-                  <p className="font-semibold text-gray-900 capitalize">{day}</p>
-                  {times.length > 0 ? (
-                    <ul className="text-gray-600 text-sm mt-1">
-                      {times.map((time) => (
-                        <li key={time}>{time}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-500 text-sm">Not available</p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <AvailabilityGrid availability={coach.availability} />
           </div>
 
           {!showContact ? (

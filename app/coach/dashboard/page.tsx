@@ -5,8 +5,16 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { Coach } from "@/types/database";
 
+type Analytics = {
+  views: number;
+  conversations: number;
+  responseRate: number;
+  conversionRate: number;
+};
+
 export default function CoachDashboardPage() {
   const [coach, setCoach] = useState<Coach | null>(null);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -43,9 +51,48 @@ export default function CoachDashboardPage() {
       }
 
       setCoach(data || null);
+      if (data) await fetchAnalytics(data.id, userId);
     } catch (err) {
       console.error(err);
       setError("Failed to load profile");
+    }
+  };
+
+  const fetchAnalytics = async (coachId: string, userId: string) => {
+    try {
+      const [{ count: viewCount }, { data: convs }] = await Promise.all([
+        supabase
+          .from("profile_views")
+          .select("id", { count: "exact", head: true })
+          .eq("coach_id", coachId),
+        supabase.from("conversations").select("id").eq("coach_id", coachId),
+      ]);
+
+      const conversationIds = (convs || []).map((c) => c.id);
+      let respondedCount = 0;
+
+      if (conversationIds.length > 0) {
+        const { data: msgs } = await supabase
+          .from("messages")
+          .select("conversation_id")
+          .eq("sender_id", userId)
+          .in("conversation_id", conversationIds);
+
+        respondedCount = new Set((msgs || []).map((m) => m.conversation_id)).size;
+      }
+
+      setAnalytics({
+        views: viewCount || 0,
+        conversations: conversationIds.length,
+        responseRate: conversationIds.length
+          ? Math.round((respondedCount / conversationIds.length) * 100)
+          : 0,
+        conversionRate: viewCount
+          ? Math.round((conversationIds.length / viewCount) * 100)
+          : 0,
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -135,6 +182,30 @@ export default function CoachDashboardPage() {
               </div>
             );
           })()}
+
+          {analytics && coach.status === "approved" && (
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Performance</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-2xl font-bold text-primary-600">{analytics.views}</p>
+                  <p className="text-xs text-gray-600 mt-1">Profile Views</p>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-2xl font-bold text-primary-600">{analytics.conversations}</p>
+                  <p className="text-xs text-gray-600 mt-1">Conversations Started</p>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-2xl font-bold text-primary-600">{analytics.responseRate}%</p>
+                  <p className="text-xs text-gray-600 mt-1">Response Rate</p>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-2xl font-bold text-primary-600">{analytics.conversionRate}%</p>
+                  <p className="text-xs text-gray-600 mt-1">View → Message</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="flex justify-between items-start mb-4">

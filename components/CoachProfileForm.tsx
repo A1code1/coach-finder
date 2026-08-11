@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { SPECIALTIES, AGE_GROUPS } from "@/constants/specialties";
 import { DUTCH_CITIES, searchCities } from "@/constants/dutch-cities";
+import { TIME_SLOTS, DAYS } from "@/constants/time-slots";
 import type { Coach } from "@/types/database";
 
-const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const MAX_PHOTOS = 6;
 
 type FormState = {
@@ -415,29 +415,82 @@ export function CoachProfileForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-3">Weekly Availability</label>
-          <div className="space-y-4">
-            {DAYS.map((day) => (
-              <div key={day}>
-                <label className="text-gray-700 font-medium capitalize">{day}</label>
-                <input
-                  type="text"
-                  placeholder="e.g., 18:00-20:00, 20:00-21:30"
-                  value={(form.availability[day] || []).join(", ")}
-                  onChange={(e) => {
-                    const times = e.target.value
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter((t) => t);
-                    setForm({
-                      ...form,
-                      availability: { ...form.availability, [day]: times },
-                    });
-                  }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-            ))}
+          <div className="border border-gray-200 rounded-lg overflow-hidden overflow-x-auto">
+            <div className="grid grid-cols-[80px_repeat(4,1fr)] bg-gray-50 text-xs font-semibold text-gray-600 border-b border-gray-200 min-w-[520px]">
+              <div className="p-2"></div>
+              {TIME_SLOTS.map((slot) => (
+                <div key={slot} className="p-2 text-center">
+                  {slot.split(" (")[0]}
+                </div>
+              ))}
+            </div>
+            {DAYS.map((day) => {
+              const dayTimes = form.availability[day] || [];
+              const legacy = dayTimes.filter((t) => !(TIME_SLOTS as readonly string[]).includes(t));
+              return (
+                <div
+                  key={day}
+                  className="grid grid-cols-[80px_repeat(4,1fr)] border-b border-gray-100 last:border-b-0 min-w-[520px]"
+                >
+                  <div className="p-2 text-sm font-medium text-gray-700 capitalize self-center">{day}</div>
+                  {TIME_SLOTS.map((slot) => {
+                    const active = dayTimes.includes(slot);
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => {
+                          const times = active
+                            ? dayTimes.filter((t) => t !== slot)
+                            : [...dayTimes, slot];
+                          setForm({
+                            ...form,
+                            availability: { ...form.availability, [day]: times },
+                          });
+                        }}
+                        className={`m-1 py-2 rounded text-xs font-medium transition ${
+                          active
+                            ? "bg-primary-600 text-white"
+                            : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                        }`}
+                      >
+                        {active ? "✓" : ""}
+                      </button>
+                    );
+                  })}
+                  {legacy.length > 0 && (
+                    <div className="col-start-2 col-span-4 px-1 pb-2 flex flex-wrap gap-1">
+                      {legacy.map((t) => (
+                        <span
+                          key={t}
+                          className="text-xs bg-yellow-50 text-yellow-700 px-2 py-1 rounded flex items-center gap-1"
+                        >
+                          {t}
+                          <button
+                            type="button"
+                            aria-label={`Remove ${t}`}
+                            onClick={() =>
+                              setForm({
+                                ...form,
+                                availability: {
+                                  ...form.availability,
+                                  [day]: dayTimes.filter((x) => x !== t),
+                                },
+                              })
+                            }
+                            className="font-bold"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+          <p className="text-xs text-gray-500 mt-2">Tap a time slot to toggle your availability for that day.</p>
         </div>
 
         <button
