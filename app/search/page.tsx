@@ -219,8 +219,17 @@ function SearchContent() {
             {coaches.map((coach) => (
               <div
                 key={coach.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${coach.name}'s profile`}
                 onClick={() => router.push(`/coach/${coach.id}`)}
-                className="bg-dark-card border border-primary-600 border-opacity-30 rounded-lg hover:border-primary-500 hover:border-opacity-50 shadow-lg hover:shadow-2xl transition transform hover:scale-105 p-6 cursor-pointer h-full flex flex-col"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/coach/${coach.id}`);
+                  }
+                }}
+                className="bg-dark-card border border-primary-600 border-opacity-30 rounded-lg hover:border-primary-500 hover:border-opacity-50 shadow-lg hover:shadow-2xl transition transform hover:scale-105 p-6 cursor-pointer h-full flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 {coach.photo_url && (
                   <div className="mb-4 h-48 bg-dark-surface rounded-lg overflow-hidden border border-primary-600 border-opacity-20">

@@ -90,8 +90,33 @@ export default function MessagesPage() {
       )}
 
       {conversations.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-600">
-          No conversations yet.
+        <div className="bg-white rounded-lg shadow p-12 text-center">
+          <svg
+            className="w-14 h-14 mx-auto mb-4 text-gray-300"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8-1.5 0-2.912-.325-4.146-.895L3 20l1.09-3.267C3.4 15.67 3 14.36 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+          <p className="text-gray-600 mb-6">
+            {role === "coach"
+              ? "No conversations yet. They'll show up here once a player messages you."
+              : "No conversations yet. Message a coach to get started."}
+          </p>
+          {role === "player" && (
+            <Link
+              href="/search?showAll=true"
+              className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded-lg transition"
+            >
+              Browse Coaches
+            </Link>
+          )}
         </div>
       ) : (
         <div className="space-y-3">

@@ -114,8 +114,29 @@ export default function FavoritesPage() {
       )}
 
       {coaches.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-600">
-          You haven't favorited any coaches yet. Tap the heart icon on a coach card to add one.
+        <div className="bg-white rounded-lg shadow p-12 text-center">
+          <svg
+            className="w-14 h-14 mx-auto mb-4 text-gray-300"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 21s-6.716-4.35-9.428-8.24C.665 9.73 1.42 6.2 4.2 4.8c2.13-1.07 4.61-.45 5.8 1.36C11.19 4.35 13.67 3.73 15.8 4.8c2.78 1.4 3.535 4.93 1.628 7.96C18.716 16.65 12 21 12 21z"
+            />
+          </svg>
+          <p className="text-gray-600 mb-6">
+            You haven't favorited any coaches yet. Tap the heart icon on a coach card to save one for comparison.
+          </p>
+          <Link
+            href="/search?showAll=true"
+            className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded-lg transition"
+          >
+            Browse Coaches
+          </Link>
         </div>
       ) : (
         <div className="overflow-x-auto">

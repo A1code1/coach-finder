@@ -60,7 +60,7 @@ export function FavoriteButton({
       disabled={loading}
       aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
       aria-pressed={favorited}
-      className={`transition disabled:opacity-50 ${favorited ? "text-accent-500" : ""} ${className}`}
+      className={`transition transform hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 ${favorited ? "text-accent-500" : ""} ${className}`}
     >
       <svg
         className="w-6 h-6"
