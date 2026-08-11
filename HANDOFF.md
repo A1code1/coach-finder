@@ -3,7 +3,7 @@
 ## Quick Start
 - **GitHub:** https://github.com/A1code1/coach-finder
 - **Supabase Project ID:** `prvwmdurszhaagbxgato`
-- **Status:** MVP complete with Athletic Chrome theme, 34 seeded coaches, location search, and filters
+- **Status:** MVP complete with Trusted Marketplace theme, 34 seeded coaches, location search, and filters
 
 ---
 
@@ -15,7 +15,7 @@
 - Search coaches by location (50 Dutch cities) or nationwide
 - Filter by: specialty, age group (kids/teens/adults), gender
 - 34 realistic coach profiles with photos
-- Athletic Chrome dark theme (gold/red accents)
+- Trusted Marketplace theme (navy/blue accents), generated with ui-ux-pro-max — see `design-system/coach-finder/MASTER.md`
 - Supabase backend with Row-Level Security
 
 **Out of Scope (v1):**
@@ -42,14 +42,15 @@
 
 ## Architecture & Key Decisions
 
-### Color Theme: Athletic Chrome
-- **Dark background:** Linear gradient #1a1a1a → #2d2d2d
-- **Primary accent:** Gold (#ffb81c) with red (#ff0000)
-- **Text:** Light gray (#f5f5f5) on dark surfaces
-- **Messaging:** "Peak Performance," "Championship," "Elite"
-- **Tailwind config:** Primary colors set to gold, custom dark/accent shades
+### Color Theme: Trusted Marketplace
+- **Background:** Light (#f8fafc), white cards
+- **Primary accent:** Navy (#0f172a) headings, blue (#0369a1) CTAs
+- **Fonts:** Poppins (headings) / Open Sans (body), via `next/font/google`
+- **Messaging:** Credibility-first — verified profiles, no hidden fees
+- **Tailwind config:** `primary` = navy/blue scale, `accent` = red (favorites/destructive)
+- **Source of truth:** `design-system/coach-finder/MASTER.md`, generated with the `ui-ux-pro-max` skill
 
-**Rationale:** Premium gym aesthetic, differentiates from competitor coach platforms, appeals to serious athletes.
+**Rationale:** This is a marketplace where parents vet coaches for their kids — trust and credibility read stronger than a bold athletic look.
 
 ### Location Search
 - **Static lookup table** in `constants/dutch-cities.ts` (50 major cities)
@@ -100,10 +101,10 @@ Only `approved` coaches show in search (enforced via Supabase RLS policies).
 
 ### ✅ DONE
 1. **Homepage (app/page.tsx)**
-   - Dark theme with gradient hero
+   - Light "Trusted Marketplace" hero + search-first layout
    - Search form: city input, radius, specialty, age group, gender
    - "Show all coaches" nationwide toggle
-   - Stats display (500+ coaches, 50 cities, 4.9★)
+   - Trust/safety section (verified profiles, nationwide coverage, no hidden fees)
 
 2. **Search Results (app/search/page.tsx)**
    - Distance filtering (Haversine)
@@ -118,9 +119,9 @@ Only `approved` coaches show in search (enforced via Supabase RLS policies).
    - RLS policies enforced
 
 4. **Styling**
-   - tailwind.config.ts: Athletic Chrome colors
-   - app/globals.css: Dark background, CSS variables
-   - app/layout.tsx: Dark header/footer with gradients
+   - tailwind.config.ts: Trusted Marketplace navy/blue colors + Poppins/Open Sans fonts
+   - app/globals.css: Light background, focus-visible outlines, prefers-reduced-motion
+   - app/layout.tsx: Light header/footer, SVG logo mark (no emoji)
    - Responsive design (mobile-first)
 
 ### ⏳ NOT DONE (v2+)
@@ -209,10 +210,10 @@ const byAgeGroup = ageGroup ? filter(bySpecialty, ag => coach.age_groups.include
 const byGender = gender ? filter(byAgeGroup, g => coach.gender === gender) : byAgeGroup;
 ```
 
-### Tailwind Classes (Athletic Chrome)
-- **Primary button:** `bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600`
-- **Dark card:** `bg-dark-card border border-primary-600 border-opacity-30`
-- **Label:** `text-primary-400 font-bold uppercase tracking-wider`
+### Tailwind Classes (Trusted Marketplace)
+- **Primary button:** `bg-primary-600 hover:bg-primary-700 text-white`
+- **Card:** `bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg`
+- **Heading:** `font-heading text-primary-900 font-bold`
 
 ### Supabase Query Pattern
 ```typescript
@@ -315,13 +316,14 @@ const { data, error } = await supabase
 ## Quick Reference: Tailwind Colors
 
 ```
-Primary (Gold):     primary-{50,100,500,600,700,900}
-Accent (Red):       accent-{500,600,700}
-Dark (Background):  dark-bg, dark-surface, dark-card
-Text:               dark-text, dark-textSecondary
+Primary (Navy/Blue): primary-{50,100,400,500,600,700,900}  — 600 is the CTA blue, 900 is navy
+Accent (Red):         accent-{400,500,600}  — favorites/destructive actions only
+Dark (legacy alias):  dark-bg, dark-surface, dark-card, dark-text, dark-textSecondary
+                       — repointed to light-theme-safe values; kept only so components
+                       that haven't been touched since the redesign still render correctly
 ```
 
-All defined in `tailwind.config.ts`.
+All defined in `tailwind.config.ts`. Fonts: `font-heading` (Poppins) / default `font-sans` (Open Sans), loaded via `next/font/google` in `app/layout.tsx`.
 
 ---
 

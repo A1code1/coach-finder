@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { RatingBadge } from "@/components/RatingBadge";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { AvailabilityGrid } from "@/components/AvailabilityGrid";
 import { Skeleton } from "@/components/Skeleton";
 import { useRequireAuth } from "@/lib/useRequireAuth";
@@ -156,7 +157,7 @@ export default function CoachProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
         {photos.length > 0 && (
           <div>
             <div className="h-96 bg-gray-200 overflow-hidden">
@@ -187,7 +188,10 @@ export default function CoachProfilePage() {
         <div className="p-8">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">{coach.name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-4xl font-bold text-gray-900">{coach.name}</h1>
+                <VerifiedBadge className="mt-1" />
+              </div>
               <p className="text-gray-600 text-lg">{coach.city}</p>
             </div>
             <div className="text-right">

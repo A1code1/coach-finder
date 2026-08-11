@@ -4,17 +4,17 @@ export function Skeleton({ className = "" }: { className?: string }) {
 
 export function CoachCardSkeleton() {
   return (
-    <div className="bg-dark-card border border-primary-600 border-opacity-30 rounded-lg p-6 h-full flex flex-col">
-      <div className="mb-4 h-48 rounded-lg bg-dark-surface animate-pulse" />
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 h-full flex flex-col">
+      <div className="mb-4 h-48 rounded-lg bg-gray-100 animate-pulse" />
       <div className="flex justify-between items-start gap-2 mb-3">
-        <div className="h-5 w-32 rounded bg-dark-surface animate-pulse" />
-        <div className="h-5 w-12 rounded bg-dark-surface animate-pulse" />
+        <div className="h-5 w-32 rounded bg-gray-100 animate-pulse" />
+        <div className="h-5 w-12 rounded bg-gray-100 animate-pulse" />
       </div>
-      <div className="h-4 w-20 rounded bg-dark-surface animate-pulse mb-3" />
-      <div className="h-5 w-24 rounded bg-dark-surface animate-pulse mb-3" />
-      <div className="h-4 w-full rounded bg-dark-surface animate-pulse mb-1" />
-      <div className="h-4 w-2/3 rounded bg-dark-surface animate-pulse mb-4" />
-      <div className="h-9 w-full rounded-lg bg-dark-surface animate-pulse mt-auto" />
+      <div className="h-4 w-20 rounded bg-gray-100 animate-pulse mb-3" />
+      <div className="h-5 w-24 rounded bg-gray-100 animate-pulse mb-3" />
+      <div className="h-4 w-full rounded bg-gray-100 animate-pulse mb-1" />
+      <div className="h-4 w-2/3 rounded bg-gray-100 animate-pulse mb-4" />
+      <div className="h-9 w-full rounded-lg bg-gray-100 animate-pulse mt-auto" />
     </div>
   );
 }

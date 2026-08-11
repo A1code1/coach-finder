@@ -4,8 +4,8 @@
   "description": "Find, compare, and message football coaches in the Netherlands.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a1a",
-  "theme_color": "#1a1a1a",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "/icon.svg",
