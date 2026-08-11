@@ -54,14 +54,14 @@ export default function Home() {
 
   if (checking || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="athletic-theme flex items-center justify-center px-4">
         <p className="text-dark-textSecondary text-lg">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
+    <div className="athletic-theme flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-12">
           <div className="inline-block mb-4 px-4 py-2 bg-primary-500 bg-opacity-20 border border-primary-500 border-opacity-40 rounded-full">
