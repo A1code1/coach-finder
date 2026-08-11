@@ -15,6 +15,7 @@ function PlayerSignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +42,10 @@ function PlayerSignupForm() {
 
       if (signupError) throw signupError;
 
-      if (data.user) {
+      if (data.session) {
         router.push(next);
+      } else {
+        setConfirmationSent(true);
       }
     } catch (err: any) {
       setError(err.message || "Failed to sign up");
@@ -50,6 +53,28 @@ function PlayerSignupForm() {
       setLoading(false);
     }
   };
+
+  if (confirmationSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Check your email</h1>
+            <p className="text-gray-600">
+              We've sent a confirmation link to <strong>{email}</strong>. Click it to activate
+              your account, then log in.
+            </p>
+            <Link
+              href={`/player/login?next=${encodeURIComponent(next)}`}
+              className="inline-block mt-6 text-primary-600 hover:text-primary-700 font-medium"
+            >
+              Go to login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
