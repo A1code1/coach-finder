@@ -59,3 +59,10 @@ export interface Message {
   body: string;
   created_at: string;
 }
+
+export interface Favorite {
+  id: string;
+  player_id: string;
+  coach_id: string;
+  created_at: string;
+}

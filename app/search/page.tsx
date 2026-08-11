@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase";
 import { haversineDistance } from "@/lib/utils";
 import { getCityByName } from "@/constants/dutch-cities";
 import { RatingBadge } from "@/components/RatingBadge";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import type { Coach } from "@/types/database";
 
 type ReviewStats = Record<string, { avg: number; count: number }>;
@@ -14,8 +16,11 @@ type ReviewStats = Record<string, { avg: number; count: number }>;
 function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectTo = `/search${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+  const { user, checking } = useRequireAuth(redirectTo);
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats>({});
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -27,8 +32,8 @@ function SearchContent() {
   const gender = searchParams.get("gender") || "";
 
   useEffect(() => {
-    fetchCoaches();
-  }, [city, showAll, radius, specialty, ageGroup, gender]);
+    if (user) fetchCoaches();
+  }, [user, city, showAll, radius, specialty, ageGroup, gender]);
 
   const fetchCoaches = async () => {
     try {
@@ -94,13 +99,32 @@ function SearchContent() {
         : byAgeGroup;
 
       setCoaches(byGender);
-      await fetchReviewStats(byGender.map((coach) => coach.id));
+      await Promise.all([
+        fetchReviewStats(byGender.map((coach) => coach.id)),
+        fetchFavorites(),
+      ]);
     } catch (err) {
       setError("Failed to fetch coaches");
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchFavorites = async () => {
+    if (!user) return;
+
+    const { data, error: favError } = await supabase
+      .from("favorites")
+      .select("coach_id")
+      .eq("player_id", user.id);
+
+    if (favError) {
+      console.error(favError);
+      return;
+    }
+
+    setFavoriteIds(new Set((data || []).map((row) => row.coach_id)));
   };
 
   const fetchReviewStats = async (coachIds: string[]) => {
@@ -135,6 +159,9 @@ function SearchContent() {
 
     setReviewStats(stats);
   };
+
+  if (checking || !user)
+    return <div className="text-center py-12 text-dark-textSecondary text-lg">Loading...</div>;
 
   if (loading)
     return <div className="text-center py-12 text-dark-textSecondary text-lg">Loading elite coaches...</div>;
@@ -190,11 +217,18 @@ function SearchContent() {
               )}
               <div className="flex justify-between items-start gap-2 mb-1">
                 <h3 className="text-lg font-bold text-primary-400">{coach.name}</h3>
-                <RatingBadge
-                  avg={reviewStats[coach.id]?.avg ?? 0}
-                  count={reviewStats[coach.id]?.count ?? 0}
-                  className="text-dark-textSecondary shrink-0"
-                />
+                <div className="flex items-center gap-2 shrink-0">
+                  <FavoriteButton
+                    coachId={coach.id}
+                    initialFavorited={favoriteIds.has(coach.id)}
+                    className="text-dark-textSecondary hover:text-accent-500"
+                  />
+                  <RatingBadge
+                    avg={reviewStats[coach.id]?.avg ?? 0}
+                    count={reviewStats[coach.id]?.count ?? 0}
+                    className="text-dark-textSecondary"
+                  />
+                </div>
               </div>
               <p className="text-dark-textSecondary text-sm mb-3">{coach.city}</p>
               <p className="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent font-bold mb-3 text-lg">

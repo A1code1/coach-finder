@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DUTCH_CITIES, searchCities } from "@/constants/dutch-cities";
 import { SPECIALTIES } from "@/constants/specialties";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 
 export default function Home() {
   const router = useRouter();
+  const { user, checking } = useRequireAuth("/");
   const [city, setCity] = useState("");
   const [radius, setRadius] = useState("10");
   const [specialty, setSpecialty] = useState("");
@@ -49,6 +51,14 @@ export default function Home() {
 
     router.push(`/search?${params.toString()}`);
   };
+
+  if (checking || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <p className="text-dark-textSecondary text-lg">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">

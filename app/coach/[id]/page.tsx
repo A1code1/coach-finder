@@ -5,13 +5,17 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { RatingBadge } from "@/components/RatingBadge";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import type { Coach } from "@/types/database";
 
 export default function CoachProfilePage() {
   const params = useParams();
   const coachId = params.id as string;
+  const { user, checking } = useRequireAuth(`/coach/${coachId}`);
   const [coach, setCoach] = useState<Coach | null>(null);
   const [reviewStats, setReviewStats] = useState({ avg: 0, count: 0 });
+  const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showContact, setShowContact] = useState(false);
@@ -19,8 +23,8 @@ export default function CoachProfilePage() {
   const [emailStep, setEmailStep] = useState(false);
 
   useEffect(() => {
-    fetchCoach();
-  }, [coachId]);
+    if (user) fetchCoach();
+  }, [user, coachId]);
 
   const fetchCoach = async () => {
     try {
@@ -34,7 +38,7 @@ export default function CoachProfilePage() {
 
       if (fetchError) throw new Error("Coach not found");
       setCoach(data);
-      await fetchReviewStats(coachId);
+      await Promise.all([fetchReviewStats(coachId), fetchFavoriteStatus(coachId)]);
     } catch (err) {
       setError("Failed to load coach profile");
       console.error(err);
@@ -62,6 +66,24 @@ export default function CoachProfilePage() {
 
     const sum = reviews.reduce((total, review) => total + review.rating, 0);
     setReviewStats({ avg: sum / reviews.length, count: reviews.length });
+  };
+
+  const fetchFavoriteStatus = async (id: string) => {
+    if (!user) return;
+
+    const { data, error: favError } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("coach_id", id)
+      .eq("player_id", user.id)
+      .maybeSingle();
+
+    if (favError) {
+      console.error(favError);
+      return;
+    }
+
+    setIsFavorited(!!data);
   };
 
   const handleRevealContact = async () => {
@@ -99,6 +121,7 @@ export default function CoachProfilePage() {
     }
   };
 
+  if (checking || !user) return <div className="text-center py-12">Loading...</div>;
   if (loading) return <div className="text-center py-12">Loading...</div>;
   if (error || !coach)
     return (
@@ -125,7 +148,14 @@ export default function CoachProfilePage() {
               <p className="text-gray-600 text-lg">{coach.city}</p>
             </div>
             <div className="text-right">
-              <RatingBadge avg={reviewStats.avg} count={reviewStats.count} className="text-gray-600 justify-end mb-1" />
+              <div className="flex items-center justify-end gap-2 mb-1">
+                <FavoriteButton
+                  coachId={coachId}
+                  initialFavorited={isFavorited}
+                  className="text-gray-400 hover:text-accent-500"
+                />
+                <RatingBadge avg={reviewStats.avg} count={reviewStats.count} className="text-gray-600" />
+              </div>
               <p className="text-3xl font-bold text-primary-600">
                 €{coach.hourly_rate.toFixed(2)}<span className="text-sm text-gray-600">/hour</span>
               </p>
