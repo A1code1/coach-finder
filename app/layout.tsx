@@ -3,6 +3,7 @@ import { Poppins, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { HeaderNav } from "@/components/HeaderNav";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { SITE_URL, citySlug } from "@/lib/site";
 
 const heading = Poppins({
   subsets: ["latin"],
@@ -19,8 +20,17 @@ const body = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Coach Finder - Find Football Coaches in the Netherlands",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Coach Finder - Find Football Coaches in the Netherlands",
+    template: "%s | Coach Finder",
+  },
   description: "Discover and connect with experienced, verified football coaches in your area.",
+  openGraph: {
+    siteName: "Coach Finder",
+    locale: "en_NL",
+    type: "website",
+  },
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.svg",
@@ -31,6 +41,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#0f172a",
 };
+
+const POPULAR_CITIES = ["Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven", "Groningen", "Tilburg", "Breda", "Nijmegen", "Haarlem"];
 
 function LogoMark() {
   return (
@@ -70,6 +82,19 @@ export default function RootLayout({
           {children}
         </main>
         <footer className="bg-white border-t border-gray-200 mt-12">
+          <div className="max-w-6xl mx-auto px-4 pt-8 text-sm">
+            <p className="font-semibold text-primary-900 mb-2">Football coaches near you</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-gray-500">
+              {POPULAR_CITIES.map((name) => (
+                <a key={name} href={`/coaches/${citySlug(name)}`} className="hover:text-primary-700">
+                  {name}
+                </a>
+              ))}
+              <a href="/coaches" className="text-primary-600 hover:underline">
+                All cities
+              </a>
+            </div>
+          </div>
           <div className="max-w-6xl mx-auto px-4 py-8 text-center text-gray-500 text-sm">
             <p>&copy; 2026 Coach Finder. All rights reserved. | Trusted football coaching in the Netherlands.</p>
           </div>
