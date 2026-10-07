@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -10,10 +10,19 @@ import { RatingBadge } from "@/components/RatingBadge";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { CoachCardSkeletonGrid } from "@/components/Skeleton";
+import { CoachMap } from "@/components/CoachMap";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach } from "@/types/database";
 
 type ReviewStats = Record<string, { avg: number; count: number }>;
+type SortKey = "distance" | "price_asc" | "price_desc" | "rating";
+
+const SORT_LABELS: Record<SortKey, string> = {
+  distance: "Nearest first",
+  rating: "Highest rated",
+  price_asc: "Price: low to high",
+  price_desc: "Price: high to low",
+};
 
 function SearchContent() {
   const router = useRouter();
@@ -31,6 +40,24 @@ function SearchContent() {
   const specialty = searchParams.get("specialty") || "";
   const ageGroup = searchParams.get("ageGroup") || "";
   const gender = searchParams.get("gender") || "";
+  const searchCity = showAll ? undefined : getCityByName(city);
+  const defaultSort: SortKey = showAll ? "rating" : "distance";
+  const sortParam = searchParams.get("sort") as SortKey | null;
+  const sort: SortKey = sortParam && sortParam in SORT_LABELS ? sortParam : defaultSort;
+  const [showMap, setShowMap] = useState(true);
+
+  const distanceTo = (coach: Coach) => {
+    if (!searchCity) return null;
+    const coachCity = getCityByName(coach.city);
+    if (!coachCity) return null;
+    return haversineDistance(searchCity.lat, searchCity.lng, coachCity.lat, coachCity.lng);
+  };
+
+  const setSort = (value: SortKey) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("sort", value);
+    router.replace(`/search?${params.toString()}`, { scroll: false });
+  };
 
   useEffect(() => {
     if (!checking) fetchCoaches();
@@ -161,6 +188,23 @@ function SearchContent() {
     setReviewStats(stats);
   };
 
+  const sortedCoaches = useMemo(() => {
+    const list = [...coaches];
+    const rating = (c: Coach) => reviewStats[c.id]?.avg ?? 0;
+    switch (sort) {
+      case "price_asc":
+        return list.sort((a, b) => a.hourly_rate - b.hourly_rate);
+      case "price_desc":
+        return list.sort((a, b) => b.hourly_rate - a.hourly_rate);
+      case "rating":
+        return list.sort(
+          (a, b) => rating(b) - rating(a) || (reviewStats[b.id]?.count ?? 0) - (reviewStats[a.id]?.count ?? 0)
+        );
+      default:
+        return list.sort((a, b) => (distanceTo(a) ?? 0) - (distanceTo(b) ?? 0) || rating(b) - rating(a));
+    }
+  }, [coaches, reviewStats, sort, city]);
+
   if (checking)
     return <div className="text-center py-12 text-gray-500 text-lg">Loading...</div>;
 
@@ -189,6 +233,43 @@ function SearchContent() {
         </p>
       </div>
 
+      {coaches.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            Sort by
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+              className="px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+            >
+              {(Object.keys(SORT_LABELS) as SortKey[])
+                .filter((key) => key !== "distance" || !showAll)
+                .map((key) => (
+                  <option key={key} value={key}>
+                    {SORT_LABELS[key]}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <button
+            onClick={() => setShowMap(!showMap)}
+            className="text-sm font-medium text-primary-600 hover:text-primary-700"
+          >
+            {showMap ? "Hide map" : "Show map"}
+          </button>
+        </div>
+      )}
+
+      {coaches.length > 0 && showMap && (
+        <div className="mb-8">
+          <CoachMap
+            coaches={coaches}
+            center={searchCity ? { lat: searchCity.lat, lng: searchCity.lng } : null}
+            radiusKm={showAll ? null : radius}
+          />
+        </div>
+      )}
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
           {error}
@@ -209,7 +290,7 @@ function SearchContent() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {coaches.map((coach) => (
+          {sortedCoaches.map((coach) => (
             <div
               key={coach.id}
               role="button"
@@ -251,7 +332,13 @@ function SearchContent() {
                   />
                 </div>
               </div>
-              <p className="text-gray-500 text-sm mb-3">{coach.city}</p>
+              <p className="text-gray-500 text-sm mb-3">
+                {coach.city}
+                {(() => {
+                  const km = distanceTo(coach);
+                  return km != null && km >= 1 ? ` · ${Math.round(km)} km away` : "";
+                })()}
+              </p>
               <p className="text-primary-600 font-bold mb-3 text-lg">
                 €{coach.hourly_rate.toFixed(2)}/hour
               </p>

@@ -57,3 +57,13 @@ export function scoreCoachMatch(
 
   return score;
 }
+
+// Builds a wa.me link from a Dutch or international phone number, or null if it can't.
+export function whatsappLink(phone: string, text?: string): string | null {
+  let digits = phone.replace(/[^\d+]/g, "");
+  if (digits.startsWith("+")) digits = digits.slice(1);
+  else if (digits.startsWith("00")) digits = digits.slice(2);
+  else if (digits.startsWith("0")) digits = "31" + digits.slice(1);
+  if (!/^\d{8,15}$/.test(digits)) return null;
+  return `https://wa.me/${digits}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+}

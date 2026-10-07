@@ -18,6 +18,8 @@ type FormState = {
   age_groups: string[];
   specialties: string[];
   city: string;
+  email: string;
+  phone: string;
   training_locations: string[];
   availability: Record<string, string[]>;
 };
@@ -54,6 +56,8 @@ export function CoachProfileForm({
     age_groups: initialCoach?.age_groups || [],
     specialties: initialCoach?.specialties || [],
     city: initialCoach?.city || "",
+    email: initialCoach?.email || "",
+    phone: initialCoach?.phone || "",
     training_locations: initialCoach?.training_locations?.length
       ? initialCoach.training_locations
       : [""],
@@ -148,6 +152,11 @@ export function CoachProfileForm({
       return;
     }
 
+    if (!form.email.trim() && !form.phone.trim()) {
+      setError("Please add an email address or phone number so players can contact you");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -165,6 +174,8 @@ export function CoachProfileForm({
         age_groups: form.age_groups,
         specialties: form.specialties,
         city: form.city,
+        email: form.email.trim() || null,
+        phone: form.phone.trim() || null,
         training_locations: form.training_locations.filter((l) => l.trim()),
         availability: form.availability,
         photo_url: photoUrls[0] || null,
@@ -216,6 +227,32 @@ export function CoachProfileForm({
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             required
           />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Contact email</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="you@example.com"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Phone / WhatsApp</label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="06 12345678"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <p className="sm:col-span-2 text-xs text-gray-500 -mt-2">
+            Shown to players who tap &quot;Reveal contact info&quot; on your profile. Add at least one.
+          </p>
         </div>
 
         <div>
