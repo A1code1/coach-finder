@@ -141,7 +141,12 @@ export default function AdminCoachesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <div className="flex items-center gap-6">
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <Link href="/admin/reviews" className="text-primary-600 font-medium hover:underline">
+            Moderate reviews →
+          </Link>
+        </div>
         <button
           onClick={handleLogout}
           className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -153,6 +158,10 @@ export default function AdminCoachesPage() {
       <div className="mb-6 flex gap-4">
         <Link
           href="/admin/coaches"
+          onClick={(e) => {
+            e.preventDefault();
+            setFilter("pending");
+          }}
           className={`px-4 py-2 rounded font-medium ${
             filter === "pending"
               ? "bg-primary-600 text-white"

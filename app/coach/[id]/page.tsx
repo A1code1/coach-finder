@@ -9,8 +9,9 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { AvailabilityGrid } from "@/components/AvailabilityGrid";
 import { Skeleton } from "@/components/Skeleton";
+import { StarRating } from "@/components/StarRating";
 import { useCurrentUser } from "@/lib/useCurrentUser";
-import type { Coach } from "@/types/database";
+import type { Coach, Review } from "@/types/database";
 
 export default function CoachProfilePage() {
   const params = useParams();
@@ -18,6 +19,8 @@ export default function CoachProfilePage() {
   const { user, checking } = useCurrentUser();
   const [coach, setCoach] = useState<Coach | null>(null);
   const [reviewStats, setReviewStats] = useState({ avg: 0, count: 0 });
+  const [reviews, setReviews] = useState<Pick<Review, "id" | "reviewer_name" | "rating" | "comment" | "created_at">[]>([]);
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -55,15 +58,17 @@ export default function CoachProfilePage() {
   const fetchReviewStats = async (id: string) => {
     const { data: reviews, error: reviewsError } = await supabase
       .from("reviews")
-      .select("rating")
+      .select("id, reviewer_name, rating, comment, created_at")
       .eq("coach_id", id)
-      .eq("status", "approved");
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
 
     if (reviewsError) {
       console.error(reviewsError);
       return;
     }
 
+    setReviews(reviews || []);
     if (!reviews || reviews.length === 0) {
       setReviewStats({ avg: 0, count: 0 });
       return;
@@ -252,6 +257,46 @@ export default function CoachProfilePage() {
           <div className="mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Availability</h3>
             <AvailabilityGrid availability={coach.availability} />
+          </div>
+
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xl font-bold text-gray-900">Reviews</h3>
+              {reviewStats.count > 0 && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <StarRating rating={Math.round(reviewStats.avg)} />
+                  <span>
+                    {reviewStats.avg.toFixed(1)} · {reviewStats.count} review{reviewStats.count !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              )}
+            </div>
+            {reviews.length === 0 ? (
+              <p className="text-gray-500">No reviews yet.</p>
+            ) : (
+              <div className="space-y-4">
+                {(showAllReviews ? reviews : reviews.slice(0, 5)).map((review) => (
+                  <div key={review.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-semibold text-gray-900">{review.reviewer_name}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(review.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
+                      </p>
+                    </div>
+                    <StarRating rating={review.rating} />
+                    {review.comment && <p className="text-gray-700 mt-2 whitespace-pre-line">{review.comment}</p>}
+                  </div>
+                ))}
+                {reviews.length > 5 && (
+                  <button
+                    onClick={() => setShowAllReviews(!showAllReviews)}
+                    className="text-primary-600 font-medium hover:underline"
+                  >
+                    {showAllReviews ? "Show fewer reviews" : `Show all ${reviews.length} reviews`}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {!showContact ? (
