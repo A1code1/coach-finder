@@ -361,7 +361,7 @@ export default function CoachProfilePage() {
               </div>
               <p className="text-green-700 text-sm mt-4">
                 {playerEmail
-                  ? "A review link has been sent to your email!"
+                  ? "We've emailed you a link to leave a review after your session."
                   : "You can now contact the coach directly."}
               </p>
             </div>

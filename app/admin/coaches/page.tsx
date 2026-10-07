@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 import type { Coach } from "@/types/database";
 
 type FilterStatus = "pending" | "approved" | "rejected" | "unpublished";
@@ -78,7 +79,7 @@ export default function AdminCoachesPage() {
 
       if (error) throw error;
       setCoaches(coaches.filter((c) => c.id !== id));
-      // TODO: Send approval email to coach
+      notify("/api/notify/coach-status", { coachId: id });
     } catch (err) {
       console.error(err);
       alert("Failed to approve coach");
@@ -104,7 +105,7 @@ export default function AdminCoachesPage() {
       setCoaches(coaches.filter((c) => c.id !== id));
       setRejectingId(null);
       setRejectionReason("");
-      // TODO: Send rejection email to coach
+      notify("/api/notify/coach-status", { coachId: id });
     } catch (err) {
       console.error(err);
       alert("Failed to reject coach");
