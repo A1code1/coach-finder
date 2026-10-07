@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 import type { Message } from "@/types/database";
 
 export default function ConversationThreadPage() {
@@ -114,6 +115,7 @@ export default function ConversationThreadPage() {
         .eq("id", conversationId);
 
       setBody("");
+      notify("/api/notify/new-message", { conversationId });
     } catch (err) {
       console.error(err);
       setError("Failed to send message");

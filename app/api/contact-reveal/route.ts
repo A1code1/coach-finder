@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { renderEmail, sendEmail, siteUrl } from "@/lib/email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
 
   const { data: coach } = await admin
     .from("coaches")
-    .select("id")
+    .select("id, name")
     .eq("id", coachId)
     .eq("status", "approved")
     .maybeSingle();
@@ -46,6 +47,21 @@ export async function POST(request: Request) {
   if (error) {
     console.error(error);
     return NextResponse.json({ error: "Could not save your request" }, { status: 500 });
+  }
+
+  if (email && reviewToken) {
+    await sendEmail({
+      to: email,
+      subject: `How was your session with ${coach.name}?`,
+      html: renderEmail({
+        heading: `Your review link for ${coach.name}`,
+        paragraphs: [
+          `Thanks for using Coach Finder. After you've trained with ${coach.name}, use the button below to share how it went.`,
+          "Your review helps other players and parents choose the right coach. The link works once.",
+        ],
+        cta: { label: "Leave a review", url: `${siteUrl(request)}/review/${reviewToken}` },
+      }),
+    });
   }
 
   return NextResponse.json({ ok: true });
