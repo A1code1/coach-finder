@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DUTCH_CITIES, searchCities } from "@/constants/dutch-cities";
 import { SPECIALTIES } from "@/constants/specialties";
+import { DonationBanner } from "@/components/DonationBanner";
 
 function ShieldCheckIcon({ className = "" }: { className?: string }) {
   return (
@@ -91,6 +92,7 @@ export default function Home() {
 
   return (
     <div>
+      <DonationBanner />
       <div className="max-w-6xl mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
           <div className="lg:col-span-2 lg:pt-6">
