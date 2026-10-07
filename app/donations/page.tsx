@@ -6,7 +6,7 @@ import { DONATION_PER_SESSION_EUR, formatDonation, getDonationTotal } from "@/li
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Coach Finder Kids Fund",
+  title: "Kids Fund",
   description:
     "For every session booked on Coach Finder we set aside €1 to pay for football coaching for kids whose families can't afford it.",
   alternates: { canonical: "/donations" },
