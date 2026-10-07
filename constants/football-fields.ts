@@ -1,6 +1,7 @@
 // Real football sports parks per city, from OpenStreetMap (© OpenStreetMap contributors, ODbL).
-// Sports centres named "Sportpark …" / "Sportcomplex …" within 5 km of the city centre,
-// nearest first, up to 12 per city. Generated once; coaches are pinned at one of these.
+// Mostly sports centres named "Sportpark …" / "Sportcomplex …" near the city centre (plus named
+// club football grounds where a city has few of those), checked by hand to lie in the
+// municipality. Nearest first, up to 12 per city. Generated once; coaches are pinned at one of these.
 export interface FootballField {
   name: string;
   lat: number;
@@ -61,9 +62,7 @@ export const FOOTBALL_FIELDS: Record<string, FootballField[]> = {
     { name: "Sportcomplex Bea", lat: 53.18255, lng: 6.60058 },
   ],
   "Tilburg": [
-    { name: "Sportcomplex T-Kwadraat", lat: 51.54001, lng: 5.0746 },
-    { name: "Sportpark Van den Wildenberg", lat: 51.51689, lng: 5.04884 },
-    { name: "Sportpark De Rauwbraken", lat: 51.58305, lng: 5.13036 },
+    { name: "Sportpark Generaal Eisenhowerweg", lat: 51.58112, lng: 5.14801 },
   ],
   "Almere": [
     { name: "Sportpark Klein-Brandt", lat: 52.37262, lng: 5.19632 },
@@ -76,7 +75,8 @@ export const FOOTBALL_FIELDS: Record<string, FootballField[]> = {
     { name: "Sportpark Buitenhout", lat: 52.37995, lng: 5.28439 },
   ],
   "Breda": [
-    { name: "Sportpark Het Kadijkje", lat: 51.6023, lng: 4.78167 },
+    { name: "Sportpark Ruitersvaart", lat: 51.6478, lng: 4.75085 },
+    { name: "Sportpark De Leeuwerik", lat: 51.51731, lng: 4.77529 },
   ],
   "Nijmegen": [
     { name: "Sportpark Fagelstraat", lat: 51.83786, lng: 5.86801 },
@@ -104,9 +104,27 @@ export const FOOTBALL_FIELDS: Record<string, FootballField[]> = {
     { name: "Sportpark Hartenstein", lat: 51.98572, lng: 5.83427 },
     { name: "Sportpark Rijkerswoerd", lat: 51.94425, lng: 5.88185 },
   ],
+  "Enschede": [
+    { name: "Sportpark Rigtersbleek", lat: 52.22622, lng: 6.87117 },
+    { name: "Sportpark Het Wooldrik", lat: 52.2145, lng: 6.91718 },
+    { name: "Sportpark Het Diekman", lat: 52.20558, lng: 6.90195 },
+    { name: "Sportpark Kroedkotten", lat: 52.23425, lng: 6.91182 },
+    { name: "Sportpark 't Spolmink", lat: 52.25015, lng: 6.9063 },
+    { name: "Sportpark Wesselerbrink Midden", lat: 52.19389, lng: 6.86631 },
+    { name: "Sportpark Wesselerbrink Zuid", lat: 52.1904, lng: 6.86383 },
+  ],
+  "Amersfoort": [
+    { name: "Sportpark de Koppel", lat: 52.16523, lng: 5.3904 },
+    { name: "Sportpark Emiclaer", lat: 52.17923, lng: 5.39281 },
+    { name: "Sportpark Nimmerdor", lat: 52.13578, lng: 5.37743 },
+    { name: "Sportpark Zielhorst", lat: 52.18302, lng: 5.41456 },
+    { name: "Sportpark De Wetering", lat: 52.14122, lng: 5.43981 },
+    { name: "Sportcomplex Nieuwland", lat: 52.19842, lng: 5.38647 },
+    { name: "Sportpark Olympus", lat: 52.1977, lng: 5.40251 },
+    { name: "Sportpark Kleinhoven", lat: 52.1805, lng: 5.45165 },
+  ],
   "Maastricht": [
     { name: "Sportpark West", lat: 50.85954, lng: 5.65055 },
-    { name: "Sportpark RVU", lat: 50.88065, lng: 5.73879 },
   ],
   "Dordrecht": [
     { name: "Sportpark Reeweg", lat: 51.80532, lng: 4.69495 },
@@ -133,6 +151,15 @@ export const FOOTBALL_FIELDS: Record<string, FootballField[]> = {
     { name: "Sportpark De Voscuyl", lat: 52.18533, lng: 4.4617 },
     { name: "Sportpark 't Duyfrak", lat: 52.17588, lng: 4.44257 },
   ],
+  "Haarlemmermeer": [
+    { name: "Sportcomplex De IJvelden", lat: 52.30715, lng: 4.65038 },
+    { name: "Sportcomplex Overbos", lat: 52.31002, lng: 4.64499 },
+    { name: "Sportpark De Deugd", lat: 52.29417, lng: 4.64458 },
+    { name: "Sportcomplex Koning Willem-Alexander", lat: 52.30138, lng: 4.63091 },
+    { name: "Sportpark Pioniers", lat: 52.29886, lng: 4.62931 },
+    { name: "Sportpark SCW", lat: 52.2645, lng: 4.70669 },
+    { name: "Sportcomplex FC VVC", lat: 52.2761, lng: 4.63765 },
+  ],
   "Zaanstad": [
     { name: "Sportpark Hoornseveld", lat: 52.4565, lng: 4.83353 },
     { name: "Sportpark Poelenburg", lat: 52.42938, lng: 4.85346 },
@@ -154,5 +181,180 @@ export const FOOTBALL_FIELDS: Record<string, FootballField[]> = {
   ],
   "Zoetermeer": [
     { name: "Sportpark De Meerhorst", lat: 52.09274, lng: 4.46881 },
+  ],
+  "Zwolle": [
+    { name: "Sportpark De Marslanden", lat: 52.50096, lng: 6.11925 },
+    { name: "Sportpark Jo van Marle", lat: 52.48746, lng: 6.09413 },
+    { name: "Sportpark Oosterenk", lat: 52.51811, lng: 6.12464 },
+    { name: "Sportpark De Vegtlust", lat: 52.52209, lng: 6.12684 },
+    { name: "Sportpark De Pelikaan", lat: 52.52885, lng: 6.12217 },
+    { name: "Sportpark de Siggels", lat: 52.47767, lng: 6.11922 },
+  ],
+  "Den Bosch": [
+    { name: "Sportpark De Hambaken", lat: 51.70916, lng: 5.30301 },
+    { name: "Sportpark De Groote Wielen", lat: 51.72587, lng: 5.35469 },
+  ],
+  "Schiedam": [
+    { name: "Sportpark Thurlede", lat: 51.93122, lng: 4.39499 },
+    { name: "Sportpark Willem-Alexander", lat: 51.94184, lng: 4.36043 },
+  ],
+  "Vlaardingen": [
+    { name: "Sportpark DVO'32", lat: 51.9045, lng: 4.32395 },
+    { name: "Sportpark Broekpolder", lat: 51.92071, lng: 4.32236 },
+    { name: "Sportvereniging CWO", lat: 51.92102, lng: 4.36448 },
+    { name: "VV Zwaluwen", lat: 51.93128, lng: 4.36164 },
+    { name: "Sportpark Willem-Alexander", lat: 51.94184, lng: 4.36043 },
+  ],
+  "Leeuwarden": [
+    { name: "Sportpark Nijlân", lat: 53.19093, lng: 5.77584 },
+    { name: "De Magere Weide", lat: 53.21384, lng: 5.77696 },
+    { name: "Sportcomplex Wiarda", lat: 53.17788, lng: 5.81936 },
+    { name: "Sportcomplex De Fjouwer", lat: 53.19108, lng: 5.73002 },
+  ],
+  "Alkmaar": [
+    { name: "Sportpark Sportlaan", lat: 52.62123, lng: 4.73066 },
+    { name: "Sportcomplex Oosterhout", lat: 52.62179, lng: 4.75124 },
+    { name: "Sportpark Egmonderhout", lat: 52.63085, lng: 4.71507 },
+    { name: "Sportcomplex Vaart", lat: 52.64111, lng: 4.77365 },
+    { name: "Sportpark De Nollen", lat: 52.64024, lng: 4.78113 },
+    { name: "Sportpark Het Maalwater", lat: 52.61087, lng: 4.70086 },
+    { name: "Sportpark Kiefthoek", lat: 52.65646, lng: 4.69738 },
+    { name: "Sportpark Vrone", lat: 52.6583, lng: 4.78377 },
+  ],
+  "Gouda": [
+    { name: "Olympia", lat: 52.0255, lng: 4.71848 },
+    { name: "Kunstgrasveld Calslaan", lat: 52.02731, lng: 4.71071 },
+  ],
+  "Hilversum": [
+    { name: "Sportpark Berestein", lat: 52.22261, lng: 5.13431 },
+    { name: "Sportpark de Kuil", lat: 52.26978, lng: 5.17794 },
+    { name: "Sportpark Zuid", lat: 52.27204, lng: 5.17505 },
+  ],
+  "Lelystad": [
+    { name: "Sportvereniging Batavia '90", lat: 52.49685, lng: 5.49608 },
+  ],
+  "Hoorn": [
+    { name: "Sportcomplex Julianapark", lat: 52.63757, lng: 5.06998 },
+    { name: "Sportcomplex Wilhelminapark", lat: 52.64525, lng: 5.07564 },
+    { name: "Sportcomplex Holenweg", lat: 52.651, lng: 5.07376 },
+    { name: "Sportpark Middelweg", lat: 52.64323, lng: 5.03425 },
+    { name: "Sportpark 't Krijt", lat: 52.6626, lng: 5.06973 },
+    { name: "Sportpark De Fruittuinen", lat: 52.66007, lng: 5.10228 },
+    { name: "Sportpark Keep Moving", lat: 52.65501, lng: 5.11441 },
+  ],
+  "Venlo": [
+    { name: "Sportpark Hagerhof", lat: 51.35602, lng: 6.16676 },
+    { name: "Sportpark Vrijenbroek", lat: 51.35061, lng: 6.16114 },
+    { name: "Sportpark 't Saorbrook", lat: 51.38029, lng: 6.14187 },
+    { name: "Sportpark Herungerberg", lat: 51.37686, lng: 6.20923 },
+  ],
+  "Hengelo": [
+    { name: "Sportpark 't Wilbert", lat: 52.27857, lng: 6.78373 },
+    { name: "Sportpark de Bijenkorf", lat: 52.27795, lng: 6.8162 },
+    { name: "Sportpark Slangenbeek", lat: 52.28707, lng: 6.80533 },
+    { name: "Sportcomplex De Noork", lat: 52.27404, lng: 6.82583 },
+    { name: "Sportpark De Waarbeek", lat: 52.2476, lng: 6.80569 },
+    { name: "Sportpark de Vikkerhoek", lat: 52.25257, lng: 6.76068 },
+  ],
+  "Deventer": [
+    { name: "Sportpark Rielerenk", lat: 52.25798, lng: 6.19141 },
+    { name: "Sportpark Keizerslanden", lat: 52.27671, lng: 6.15982 },
+    { name: "Sportpark Zandweerd", lat: 52.26955, lng: 6.13215 },
+    { name: "Sportpark De Horsterhoek", lat: 52.26303, lng: 6.2065 },
+    { name: "Sportpark 'd Olde Leeuwenbarg", lat: 52.21897, lng: 6.1426 },
+    { name: "Sportcomplex De Zunnebargh", lat: 52.29445, lng: 6.15726 },
+    { name: "Sportpark De Achterhoek", lat: 52.25246, lng: 6.22621 },
+  ],
+  "Ede": [
+    { name: "Sportpark Hoekelumse Eng", lat: 52.01535, lng: 5.66758 },
+    { name: "Sportpark de Eikelhof", lat: 51.99623, lng: 5.66488 },
+  ],
+  "Westland": [
+    { name: "Sportpark De Hoge Bomen", lat: 51.98209, lng: 4.21113 },
+    { name: "Sportpark De Zweth", lat: 51.98191, lng: 4.24052 },
+    { name: "Sportpark Suydervelt", lat: 52.01942, lng: 4.27022 },
+  ],
+  "Alphen aan den Rijn": [
+    { name: "Sportpark De Bijlen", lat: 52.13388, lng: 4.67461 },
+    { name: "Sportpark Zegersloot", lat: 52.12701, lng: 4.67651 },
+    { name: "Sportpark Kerk en Zanen", lat: 52.11796, lng: 4.63543 },
+    { name: "Sportpark Gruttolaan", lat: 52.13599, lng: 4.60997 },
+    { name: "Sportpark Bernardus", lat: 52.12646, lng: 4.59757 },
+  ],
+  "Emmen": [
+    { name: "Sportcomplex Meersport", lat: 52.79801, lng: 6.89584 },
+    { name: "Sportpark de Oude Ros", lat: 52.80221, lng: 6.91609 },
+    { name: "Sportpark Meerdijk", lat: 52.77794, lng: 6.9464 },
+    { name: "vv Bargeres", lat: 52.75593, lng: 6.88412 },
+    { name: "Sportpark de Luwte", lat: 52.81878, lng: 6.92267 },
+  ],
+  "Sittard-Geleen": [
+    { name: "Sportcomplex Graaf Huyn", lat: 50.95614, lng: 5.81688 },
+    { name: "Sportpark de Carmel", lat: 50.94493, lng: 5.80599 },
+  ],
+  "Helmond": [
+    { name: "Sportpark Houtsdonk", lat: 51.47027, lng: 5.65178 },
+    { name: "Sportpark de Braak", lat: 51.48679, lng: 5.67815 },
+    { name: "Sportpark de Beemd", lat: 51.46326, lng: 5.64128 },
+    { name: "Sportpark Het Molenven", lat: 51.48266, lng: 5.60274 },
+    { name: "Sportpark De Ark", lat: 51.44933, lng: 5.63114 },
+    { name: "Sportpark Brandevoort", lat: 51.45479, lng: 5.61835 },
+    { name: "Sportpark Espendonk", lat: 51.45505, lng: 5.69671 },
+    { name: "Sportpark Oudven", lat: 51.44774, lng: 5.61069 },
+  ],
+  "Oss": [
+    { name: "RKSV Margriet", lat: 51.76132, lng: 5.49368 },
+    { name: "FC Schadewijk", lat: 51.77527, lng: 5.54339 },
+    { name: "FC Ruwaard", lat: 51.74983, lng: 5.4922 },
+  ],
+  "Amstelveen": [
+    { name: "RKAVIC", lat: 52.30455, lng: 4.88515 },
+    { name: "sv Ouderkerk", lat: 52.30164, lng: 4.91971 },
+  ],
+  "S\u00fadwest-Frysl\u00e2n": [
+    { name: "Sportpark Schuttersveld", lat: 53.04329, lng: 5.64704 },
+  ],
+  "Heerlen": [
+    { name: "VV Passart", lat: 50.92189, lng: 5.94395 },
+  ],
+  "Nissewaard": [
+    { name: "Voetbalvereniging Hekelingen", lat: 51.82706, lng: 4.35586 },
+    { name: "GHVV '13", lat: 51.86118, lng: 4.25263 },
+    { name: "Sportpark Groot Nibbeland", lat: 51.82767, lng: 4.24527 },
+    { name: "VV Abbenbroek", lat: 51.85082, lng: 4.23952 },
+  ],
+  "Meierijstad": [
+    { name: "Sportpark De Vonders", lat: 51.59268, lng: 5.53652 },
+    { name: "Sportpark De Koulberg", lat: 51.58474, lng: 5.58956 },
+    { name: "Sportpark De Bergakkers", lat: 51.65827, lng: 5.55205 },
+    { name: "Sportpark De Glorie", lat: 51.61445, lng: 5.4719 },
+    { name: "Sportpark Avesteyn", lat: 51.64964, lng: 5.48613 },
+  ],
+  "Leidschendam-Voorburg": [
+    { name: "Sportpark Duivesteyn", lat: 52.08457, lng: 4.38275 },
+    { name: "Sportpark 't Loo", lat: 52.07695, lng: 4.36731 },
+    { name: "Sportpark Westvliet", lat: 52.06695, lng: 4.37309 },
+    { name: "Sportpark Vlamenburg", lat: 52.09111, lng: 4.36011 },
+    { name: "Sportpark Kastelenring", lat: 52.10498, lng: 4.40523 },
+  ],
+  "Almelo": [
+    { name: "Sportpark Heracles", lat: 52.34494, lng: 6.68665 },
+    { name: "ASV '57", lat: 52.37935, lng: 6.63414 },
+    { name: "Sportcomplex 't Brook", lat: 52.31455, lng: 6.67007 },
+    { name: "Sportpark Frielinkpark", lat: 52.38318, lng: 6.72033 },
+  ],
+  "Velsen": [
+    { name: "Sportpark Schoonenberg", lat: 52.45279, lng: 4.63662 },
+    { name: "Sportpark Driehuis", lat: 52.44141, lng: 4.63583 },
+    { name: "Sportpark Rooswijk", lat: 52.47792, lng: 4.63845 },
+    { name: "Sportpark de Doolhof", lat: 52.49346, lng: 4.60505 },
+  ],
+  "Bergen op Zoom": [
+    { name: "Sportpark Rozenoord", lat: 51.48185, lng: 4.30712 },
+  ],
+  "Aalsmeer": [
+    { name: "Sportpark Hornmeer", lat: 52.2538, lng: 4.77298 },
+    { name: "Sportpark De Randhoorn", lat: 52.25445, lng: 4.80797 },
+    { name: "Sportpark Calslagen", lat: 52.22922, lng: 4.73328 },
   ],
 };
