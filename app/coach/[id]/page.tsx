@@ -25,6 +25,7 @@ export default function CoachProfilePage() {
   const [showContact, setShowContact] = useState(false);
   const [playerEmail, setPlayerEmail] = useState("");
   const [emailStep, setEmailStep] = useState(false);
+  const [revealError, setRevealError] = useState("");
 
   useEffect(() => {
     if (user) fetchCoach();
@@ -100,37 +101,22 @@ export default function CoachProfilePage() {
   };
 
   const handleRevealContact = async () => {
-    if (playerEmail) {
-      try {
-        // Create contact reveal record with email
-        const { error } = await supabase
-          .from("contact_reveals")
-          .insert({
-            coach_id: coachId,
-            player_email: playerEmail,
-            review_token: Math.random().toString(36).substring(2, 15),
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        setShowContact(true);
-        // TODO: Send review link email via Resend
-      } catch (err) {
-        console.error(err);
+    setRevealError("");
+    try {
+      const res = await fetch("/api/contact-reveal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coachId, email: playerEmail || undefined }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setRevealError(data.error || "Something went wrong. Please try again.");
+        return;
       }
-    } else {
-      // Reveal without email
-      try {
-        await supabase.from("contact_reveals").insert({
-          coach_id: coachId,
-          player_email: null,
-          review_token: null,
-        });
-        setShowContact(true);
-      } catch (err) {
-        console.error(err);
-      }
+      setShowContact(true);
+    } catch (err) {
+      console.error(err);
+      setRevealError("Something went wrong. Please try again.");
     }
   };
 
@@ -311,6 +297,7 @@ export default function CoachProfilePage() {
                   </button>
                 </>
               )}
+              {revealError && <p className="text-red-600 text-sm mt-3">{revealError}</p>}
             </div>
           ) : (
             <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
