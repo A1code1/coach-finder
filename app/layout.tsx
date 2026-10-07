@@ -96,7 +96,7 @@ export default function RootLayout({
             </div>
           </div>
           <div className="max-w-6xl mx-auto px-4 py-8 text-center text-gray-500 text-sm">
-            <p>&copy; 2026 Coach Finder. All rights reserved. | Trusted football coaching in the Netherlands.</p>
+            <p>&copy; 2026 Coach Finder. All rights reserved. | Trusted football coaching in the Netherlands. | <a href="/donations" className="hover:text-primary-700 underline">Kids Fund</a></p>
           </div>
         </footer>
       </body>

@@ -43,6 +43,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Could not save your answer" }, { status: 500 });
   }
 
+  // Every accepted session adds €1 to the Kids Fund (unique per request, so never twice).
+  if (status === "accepted") {
+    const { error: donationError } = await admin
+      .from("donations")
+      .insert({ amount_eur: 1, source: "trial_session", trial_request_id: trial.id });
+    if (donationError) console.error(donationError);
+  }
+
   const base = siteUrl(request);
   const when = `${formatTrialDate(trial.session_date)}, ${trial.time_slot}`;
 
