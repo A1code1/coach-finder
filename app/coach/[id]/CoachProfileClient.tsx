@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/Skeleton";
 import { StarRating } from "@/components/StarRating";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach, Review } from "@/types/database";
+import { whatsappLink } from "@/lib/utils";
 
 export function CoachProfileClient() {
   const params = useParams();
@@ -359,6 +360,19 @@ export function CoachProfileClient() {
                   </p>
                 )}
               </div>
+              {coach.phone && whatsappLink(coach.phone) && (
+                <a
+                  href={whatsappLink(coach.phone, `Hi ${coach.name}, I found you on Coach Finder and I'm interested in training sessions.`)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5b] text-white font-semibold py-2 px-4 rounded-lg"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z" />
+                  </svg>
+                  Message on WhatsApp
+                </a>
+              )}
               <p className="text-green-700 text-sm mt-4">
                 {playerEmail
                   ? "We've emailed you a link to leave a review after your session."
