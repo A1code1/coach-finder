@@ -2,6 +2,7 @@ import Link from "next/link";
 import { RatingBadge } from "@/components/RatingBadge";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import type { Coach } from "@/types/database";
+import { formatEuro, lowestPackagePrice } from "@/lib/packages";
 
 // Server-friendly coach card (no favorites / client handlers), used on city pages.
 export function CoachCard({
@@ -9,7 +10,9 @@ export function CoachCard({
   rating,
   distanceKm,
 }: {
-  coach: Pick<Coach, "id" | "name" | "city" | "bio" | "photo_url" | "hourly_rate" | "specialties">;
+  coach: Pick<Coach, "id" | "name" | "city" | "bio" | "photo_url" | "hourly_rate" | "specialties"> & {
+    packages?: unknown;
+  };
   rating?: { avg: number; count: number };
   distanceKm?: number | null;
 }) {
@@ -34,7 +37,10 @@ export function CoachCard({
         {coach.city}
         {distanceKm != null && distanceKm >= 1 && ` · ${Math.round(distanceKm)} km away`}
       </p>
-      <p className="text-primary-600 font-bold mb-3 text-lg">€{Number(coach.hourly_rate).toFixed(2)}/hour</p>
+      <p className="text-primary-600 font-bold mb-3 text-lg">
+        €{Number(coach.hourly_rate).toFixed(2)}/hour
+        <PackageHint packages={coach.packages} hourlyRate={Number(coach.hourly_rate)} />
+      </p>
       <p className="text-gray-500 text-sm line-clamp-2 mb-4">{coach.bio}</p>
       <div className="flex flex-wrap gap-2 mt-auto">
         {coach.specialties.slice(0, 3).map((spec) => (
@@ -44,5 +50,15 @@ export function CoachCard({
         ))}
       </div>
     </Link>
+  );
+}
+
+export function PackageHint({ packages, hourlyRate }: { packages: unknown; hourlyRate: number }) {
+  const lowest = lowestPackagePrice(packages, hourlyRate);
+  if (lowest == null) return null;
+  return (
+    <span className="block text-xs font-medium text-green-700">
+      From {formatEuro(Math.round(lowest * 100) / 100)}/session with packages
+    </span>
   );
 }

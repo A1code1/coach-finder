@@ -8,7 +8,7 @@ export async function getApprovedCoachesWithRatings() {
   const [{ data: coaches }, { data: reviews }] = await Promise.all([
     supabase
       .from("coaches")
-      .select("id, name, city, bio, photo_url, hourly_rate, specialties, age_groups")
+      .select("id, name, city, bio, photo_url, hourly_rate, specialties, age_groups, packages")
       .eq("status", "approved"),
     supabase.from("reviews").select("coach_id, rating").eq("status", "approved"),
   ]);
