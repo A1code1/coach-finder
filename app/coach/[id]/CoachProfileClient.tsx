@@ -13,6 +13,8 @@ import { StarRating } from "@/components/StarRating";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach, Review } from "@/types/database";
 import { whatsappLink } from "@/lib/utils";
+import { PackageList } from "@/components/PackageList";
+import { cleanPackages } from "@/lib/packages";
 import { TrialRequestForm } from "@/components/TrialRequestForm";
 
 export function CoachProfileClient() {
@@ -265,6 +267,13 @@ export function CoachProfileClient() {
               </div>
             </div>
           </div>
+
+          {cleanPackages(coach.packages).length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Packages & Group Rates</h3>
+              <PackageList packages={coach.packages} hourlyRate={coach.hourly_rate} />
+            </div>
+          )}
 
           <div className="mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Training Locations</h3>

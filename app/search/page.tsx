@@ -11,6 +11,7 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { CoachCardSkeletonGrid } from "@/components/Skeleton";
 import { CoachMap } from "@/components/CoachMap";
+import { PackageHint } from "@/components/CoachCard";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach } from "@/types/database";
 
@@ -341,6 +342,7 @@ function SearchContent() {
               </p>
               <p className="text-primary-600 font-bold mb-3 text-lg">
                 €{coach.hourly_rate.toFixed(2)}/hour
+                <PackageHint packages={coach.packages} hourlyRate={coach.hourly_rate} />
               </p>
               <p className="text-gray-500 text-sm line-clamp-2 mb-4">
                 {coach.bio}

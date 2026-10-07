@@ -1,3 +1,8 @@
+// A bundle is a total price for a number of sessions; a group rate is per person per session.
+export type CoachPackage =
+  | { kind: "bundle"; sessions: number; price: number }
+  | { kind: "group"; group_size: number; price: number };
+
 export interface Coach {
   id: string;
   user_id: string;
@@ -12,6 +17,7 @@ export interface Coach {
   availability: Record<string, string[]>;
   photo_url: string | null;
   photo_urls: string[];
+  packages: CoachPackage[];
   email: string | null;
   phone: string | null;
   gender: "male" | "female" | null;

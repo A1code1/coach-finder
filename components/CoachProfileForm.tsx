@@ -7,6 +7,8 @@ import { SPECIALTIES, AGE_GROUPS } from "@/constants/specialties";
 import { DUTCH_CITIES, searchCities } from "@/constants/dutch-cities";
 import { TIME_SLOTS, DAYS } from "@/constants/time-slots";
 import type { Coach } from "@/types/database";
+import { PackagesEditor, type PackageDraft } from "@/components/PackagesEditor";
+import { cleanPackages } from "@/lib/packages";
 
 const MAX_PHOTOS = 6;
 
@@ -22,6 +24,7 @@ type FormState = {
   phone: string;
   training_locations: string[];
   availability: Record<string, string[]>;
+  packages: PackageDraft[];
 };
 
 export function CoachProfileForm({
@@ -65,6 +68,11 @@ export function CoachProfileForm({
       initialCoach?.availability && Object.keys(initialCoach.availability).length
         ? initialCoach.availability
         : (Object.fromEntries(DAYS.map((day) => [day, []])) as Record<string, string[]>),
+    packages: cleanPackages(initialCoach?.packages).map((p) => ({
+      kind: p.kind,
+      count: String(p.kind === "bundle" ? p.sessions : p.group_size),
+      price: String(p.price),
+    })),
   });
 
   const handleCityInput = (value: string) => {
@@ -157,6 +165,18 @@ export function CoachProfileForm({
       return;
     }
 
+    const packages = cleanPackages(
+      form.packages.map((p) =>
+        p.kind === "bundle"
+          ? { kind: "bundle", sessions: Number(p.count), price: Number(p.price) }
+          : { kind: "group", group_size: Number(p.count), price: Number(p.price) }
+      )
+    );
+    if (packages.length !== form.packages.length) {
+      setError("Please fill in each package: at least 2 sessions or people, and a price above €0");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -178,6 +198,7 @@ export function CoachProfileForm({
         phone: form.phone.trim() || null,
         training_locations: form.training_locations.filter((l) => l.trim()),
         availability: form.availability,
+        packages,
         photo_url: photoUrls[0] || null,
         photo_urls: photoUrls,
       };
@@ -449,6 +470,8 @@ export function CoachProfileForm({
             + Add Location
           </button>
         </div>
+
+        <PackagesEditor value={form.packages} onChange={(packages) => setForm({ ...form, packages })} />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-3">Weekly Availability</label>
