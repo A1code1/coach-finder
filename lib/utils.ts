@@ -17,11 +17,6 @@ export function haversineDistance(
   return R * c;
 }
 
-export function generateReviewToken(): string {
-  return Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15);
-}
-
 export function scoreCoachMatch(
   coach: { specialties: string[]; age_groups: string[]; gender: string | null; hourly_rate: number },
   prefs: {
