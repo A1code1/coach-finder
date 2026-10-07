@@ -45,6 +45,16 @@ export function HeaderNav() {
       <a href="/" className={navLink}>
         Home
       </a>
+      {!loggedIn && (
+        <>
+          <a href="/player/login" className={navLink}>
+            Log In
+          </a>
+          <a href="/player/signup" className={`${navLink} hidden sm:inline`}>
+            Sign Up
+          </a>
+        </>
+      )}
       {loggedIn && (
         <>
           {!isCoach && (

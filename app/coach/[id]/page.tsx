@@ -9,13 +9,13 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { AvailabilityGrid } from "@/components/AvailabilityGrid";
 import { Skeleton } from "@/components/Skeleton";
-import { useRequireAuth } from "@/lib/useRequireAuth";
+import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach } from "@/types/database";
 
 export default function CoachProfilePage() {
   const params = useParams();
   const coachId = params.id as string;
-  const { user, checking } = useRequireAuth(`/coach/${coachId}`);
+  const { user, checking } = useCurrentUser();
   const [coach, setCoach] = useState<Coach | null>(null);
   const [reviewStats, setReviewStats] = useState({ avg: 0, count: 0 });
   const [isFavorited, setIsFavorited] = useState(false);
@@ -28,8 +28,8 @@ export default function CoachProfilePage() {
   const [revealError, setRevealError] = useState("");
 
   useEffect(() => {
-    if (user) fetchCoach();
-  }, [user, coachId]);
+    if (!checking) fetchCoach();
+  }, [checking, user, coachId]);
 
   const fetchCoach = async () => {
     try {
@@ -92,9 +92,9 @@ export default function CoachProfilePage() {
   };
 
   const trackView = async (coachRow: Coach) => {
-    if (!user || user.id === coachRow.user_id) return;
+    if (user && user.id === coachRow.user_id) return;
     try {
-      await supabase.from("profile_views").insert({ coach_id: coachRow.id, viewer_id: user.id });
+      await supabase.from("profile_views").insert({ coach_id: coachRow.id, viewer_id: user?.id ?? null });
     } catch (err) {
       console.error(err);
     }
@@ -120,7 +120,7 @@ export default function CoachProfilePage() {
     }
   };
 
-  if (checking || !user || loading) {
+  if (checking || loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden p-8">

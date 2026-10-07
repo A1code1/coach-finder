@@ -10,7 +10,7 @@ import { RatingBadge } from "@/components/RatingBadge";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { CoachCardSkeletonGrid } from "@/components/Skeleton";
-import { useRequireAuth } from "@/lib/useRequireAuth";
+import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach } from "@/types/database";
 
 type ReviewStats = Record<string, { avg: number; count: number }>;
@@ -18,8 +18,7 @@ type ReviewStats = Record<string, { avg: number; count: number }>;
 function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = `/search${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-  const { user, checking } = useRequireAuth(redirectTo);
+  const { user, checking } = useCurrentUser();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats>({});
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
@@ -34,8 +33,8 @@ function SearchContent() {
   const gender = searchParams.get("gender") || "";
 
   useEffect(() => {
-    if (user) fetchCoaches();
-  }, [user, city, showAll, radius, specialty, ageGroup, gender]);
+    if (!checking) fetchCoaches();
+  }, [checking, user, city, showAll, radius, specialty, ageGroup, gender]);
 
   const fetchCoaches = async () => {
     try {
@@ -162,7 +161,7 @@ function SearchContent() {
     setReviewStats(stats);
   };
 
-  if (checking || !user)
+  if (checking)
     return <div className="text-center py-12 text-gray-500 text-lg">Loading...</div>;
 
   if (loading)
