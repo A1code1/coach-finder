@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { Coach } from "@/types/database";
+import { TrialRequestsPanel } from "@/components/TrialRequestsPanel";
 
 type Analytics = {
   views: number;
@@ -182,6 +183,8 @@ export default function CoachDashboardPage() {
               </div>
             );
           })()}
+
+          {coach.status === "approved" && <TrialRequestsPanel coachId={coach.id} />}
 
           {analytics && coach.status === "approved" && (
             <div className="bg-white rounded-lg shadow-lg p-8">
