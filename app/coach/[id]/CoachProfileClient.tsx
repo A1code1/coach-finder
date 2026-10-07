@@ -15,6 +15,7 @@ import type { Coach, Review } from "@/types/database";
 import { whatsappLink } from "@/lib/utils";
 import { PackageList } from "@/components/PackageList";
 import { cleanPackages } from "@/lib/packages";
+import { TrialRequestForm } from "@/components/TrialRequestForm";
 
 export function CoachProfileClient() {
   const params = useParams();
@@ -32,6 +33,7 @@ export function CoachProfileClient() {
   const [playerEmail, setPlayerEmail] = useState("");
   const [emailStep, setEmailStep] = useState(false);
   const [revealError, setRevealError] = useState("");
+  const [showTrialForm, setShowTrialForm] = useState(false);
 
   useEffect(() => {
     if (!checking) fetchCoach();
@@ -203,12 +205,30 @@ export function CoachProfileClient() {
             </div>
           </div>
 
-          <Link
-            href={`/coach/${coachId}/message`}
-            className="block w-full text-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg transition mb-8"
-          >
-            Message Coach
-          </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+            <button
+              onClick={() => setShowTrialForm(true)}
+              className="w-full text-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg transition"
+            >
+              Request a trial session
+            </button>
+            <Link
+              href={`/coach/${coachId}/message`}
+              className="block w-full text-center bg-white border-2 border-primary-600 text-primary-700 hover:bg-primary-50 font-bold py-3 px-4 rounded-lg transition"
+            >
+              Message Coach
+            </Link>
+          </div>
+
+          {showTrialForm && (
+            <TrialRequestForm
+              coachId={coachId}
+              coachName={coach.name}
+              availability={coach.availability}
+              user={user}
+              onClose={() => setShowTrialForm(false)}
+            />
+          )}
 
           <div className="mb-8 pb-8 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>

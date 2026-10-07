@@ -84,3 +84,18 @@ export interface PlayerPreferences {
   gender_preference: string | null;
   updated_at: string;
 }
+
+export interface TrialRequest {
+  id: string;
+  coach_id: string;
+  player_id: string | null;
+  player_name: string;
+  player_email: string;
+  player_phone: string | null;
+  session_date: string;
+  time_slot: string;
+  message: string | null;
+  status: "pending" | "accepted" | "declined";
+  responded_at: string | null;
+  created_at: string;
+}
