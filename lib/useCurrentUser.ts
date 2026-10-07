@@ -1,0 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
+
+// Like useRequireAuth, but never redirects: visitors can browse without an account.
+export function useCurrentUser() {
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active) return;
+      setUser(data.user);
+      setChecking(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return { user, checking };
+}

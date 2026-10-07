@@ -26,7 +26,11 @@ export function FavoriteButton({
       setLoading(true);
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
-      if (!user) return;
+      if (!user) {
+        const next = window.location.pathname + window.location.search;
+        window.location.href = `/player/login?next=${encodeURIComponent(next)}`;
+        return;
+      }
 
       if (favorited) {
         const { error } = await supabase
