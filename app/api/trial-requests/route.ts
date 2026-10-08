@@ -7,7 +7,7 @@ import { TRIAL_DAYS_AHEAD, formatTrialDate, slotsForDate, toIsoDate } from "@/li
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-// A player (logged in or not) asks a coach for a trial session.
+// A logged-in player asks a coach for a trial session.
 export async function POST(request: Request) {
   let body: {
     coachId?: string;
@@ -22,6 +22,11 @@ export async function POST(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  const user = await getRequestUser(request);
+  if (!user) {
+    return NextResponse.json({ error: "Please log in or sign up to request a trial session" }, { status: 401 });
   }
 
   const name = body.name?.trim().slice(0, 100) || "";
@@ -71,11 +76,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const user = await getRequestUser(request);
-
   const { error } = await admin.from("trial_requests").insert({
     coach_id: coach.id,
-    player_id: user?.id ?? null,
+    player_id: user.id,
     player_name: name,
     player_email: email,
     player_phone: phone,
