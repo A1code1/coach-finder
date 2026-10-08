@@ -210,7 +210,13 @@ export function CoachProfileClient() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
             <button
-              onClick={() => setShowTrialForm(true)}
+              onClick={() => {
+                if (!user) {
+                  window.location.href = `/player/login?next=${encodeURIComponent(`/coach/${coachId}`)}`;
+                  return;
+                }
+                setShowTrialForm(true);
+              }}
               className="w-full text-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg transition"
             >
               Request a trial session
