@@ -2,12 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
-import { getCityByName } from "@/constants/dutch-cities";
+import { getCoachField, type CoachField } from "@/lib/coachField";
+import { fieldIcon } from "@/components/fieldIcon";
 
-type MapCoach = { id: string; name: string; city: string };
+type MapCoach = { id: string; name: string; city: string; training_locations?: string[] | null };
 
-// Map of search results: one marker per city (sized by coach count) and, for a
-// city search, the search radius. Coaches only have a city, not an exact address.
+// Map of search results: each coach is pinned at a football field in their city
+// (coaches who share a field share a pin) and, for a city search, the search radius.
 export function CoachMap({
   coaches,
   center,
@@ -32,13 +33,6 @@ export function CoachMap({
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
 
-      const byCity = new Map<string, MapCoach[]>();
-      coaches.forEach((coach) => {
-        const list = byCity.get(coach.city) || [];
-        list.push(coach);
-        byCity.set(coach.city, list);
-      });
-
       const bounds = L.latLngBounds([]);
 
       if (center && radiusKm) {
@@ -53,27 +47,28 @@ export function CoachMap({
         bounds.extend(L.latLng(center.lat, center.lng).toBounds(radiusKm * 2000));
       }
 
-      byCity.forEach((list, cityName) => {
-        const city = getCityByName(cityName);
-        if (!city) return;
-        const marker = L.circleMarker([city.lat, city.lng], {
-          radius: Math.min(8 + list.length * 2, 20),
-          color: "#ffffff",
-          weight: 2,
-          fillColor: "#0f172a",
-          fillOpacity: 0.9,
-        }).addTo(map!);
+      const byField = new Map<string, { field: CoachField; list: MapCoach[] }>();
+      coaches.forEach((coach) => {
+        const field = getCoachField(coach);
+        if (!field) return;
+        const key = `${field.lat},${field.lng}`;
+        const entry = byField.get(key) || { field, list: [] };
+        entry.list.push(coach);
+        byField.set(key, entry);
+      });
 
+      const escape = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+      byField.forEach(({ field, list }) => {
+        const marker = L.marker([field.lat, field.lng], { icon: fieldIcon(L, list.length) }).addTo(map!);
         const links = list
           .slice(0, 8)
-          .map((c) => `<a href="/coach/${c.id}" style="color:#0369a1">${c.name.replace(/</g, "&lt;")}</a>`)
+          .map((c) => `<a href="/coach/${c.id}" style="color:#0369a1">${escape(c.name)}</a>`)
           .join("<br/>");
         const more = list.length > 8 ? `<br/>+${list.length - 8} more` : "";
-        marker.bindPopup(
-          `<strong>${cityName}</strong> · ${list.length} coach${list.length !== 1 ? "es" : ""}<br/>${links}${more}`
-        );
-        marker.bindTooltip(String(list.length), { permanent: true, direction: "center", className: "coach-count" });
-        bounds.extend([city.lat, city.lng]);
+        const place = field.name === field.city ? escape(field.city) : `${escape(field.name)}, ${escape(field.city)}`;
+        marker.bindPopup(`<strong>${place}</strong><br/>${links}${more}`);
+        bounds.extend([field.lat, field.lng]);
       });
 
       if (bounds.isValid()) {

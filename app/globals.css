@@ -66,16 +66,3 @@ button:focus-visible,
   --color-destructive: #dc2626;
 }
 
-/* Coach count labels on the search map */
-.leaflet-tooltip.coach-count {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 12px;
-  padding: 0;
-}
-.leaflet-tooltip.coach-count::before {
-  display: none;
-}

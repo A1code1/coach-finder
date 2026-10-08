@@ -14,6 +14,8 @@ import { useCurrentUser } from "@/lib/useCurrentUser";
 import type { Coach, Review } from "@/types/database";
 import { whatsappLink } from "@/lib/utils";
 import { PackageList } from "@/components/PackageList";
+import { CoachFieldMap } from "@/components/CoachFieldMap";
+import { getCoachField } from "@/lib/coachField";
 import { cleanPackages } from "@/lib/packages";
 import { TrialRequestForm } from "@/components/TrialRequestForm";
 
@@ -150,6 +152,7 @@ export function CoachProfileClient() {
     );
 
   const photos = coach.photo_urls?.length ? coach.photo_urls : coach.photo_url ? [coach.photo_url] : [];
+  const field = getCoachField({ id: coachId, city: coach.city, training_locations: coach.training_locations });
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -282,6 +285,16 @@ export function CoachProfileClient() {
                 <li key={location}>{location}</li>
               ))}
             </ul>
+            {field && (
+              <div className="mt-4">
+                <CoachFieldMap field={field} />
+                <p className="text-sm text-gray-500 mt-2">
+                  {field.name === field.city
+                    ? `Trains in ${field.city}`
+                    : `${field.matched ? "Trains at" : "Trains near"} ${field.name}, ${field.city}`}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="mb-8">
